@@ -4,69 +4,8 @@
 
 #include "RKM.h"
 
-
-std::vector<double> operator+ (const std::vector<double>& v_left, const std::vector<double>& v_right) {
-    std::vector<double> res(v_left.size(), 0);
-
-    for (size_t i = 0; i < res.size(); ++i) {
-        res[i] = v_left[i] + v_right[i];
-    }
-
-    return res;
-}
-
-std::vector<double> operator- (const std::vector<double>& v_left, const std::vector<double>& v_right) {
-    std::vector<double> res(v_left.size(), 0);
-
-    for (size_t i = 0; i < res.size(); ++i) {
-        res[i] = v_left[i] + v_right[i];
-    }
-
-    return res;
-}
-
-std::vector<double> operator* (double h, const std::vector<double>& v_right) {
-    std::vector<double> res(v_right.size(), 0);
-
-    for (size_t i = 0; i < res.size(); ++i) {
-        res[i] = h * v_right[i];
-    }
-
-    return res;
-}
-
-std::vector<double> operator/ (double h, const std::vector<double>& v_right) {
-    std::vector<double> res(v_right.size(), 0);
-
-    for (size_t i = 0; i < res.size(); ++i) {
-        res[i] = v_right[i] / h;
-    }
-
-    return res;
-}
-
-std::vector<double> operator* (const std::vector<double>& v_right, double h) {
-    std::vector<double> res(v_right.size(), 0);
-
-    for (size_t i = 0; i < res.size(); ++i) {
-        res[i] = h * v_right[i];
-    }
-
-    return res;
-}
-
-std::vector<double> operator/ (const std::vector<double>& v_right, double h) {
-    std::vector<double> res(v_right.size(), 0);
-
-    for (size_t i = 0; i < res.size(); ++i) {
-        res[i] = v_right[i] / h;
-    }
-
-    return res;
-}
-
-std::vector<double> RKM::operator() (double t, const std::vector<double>& y) {
-    std::vector<double> res(number_of_equations, 0);
+boost_vector RKM::operator() (double t, const boost_vector& y) {
+    boost_vector res(number_of_equations);
     for (size_t i = 0; i < number_of_equations; ++i) {
         res[i] = functions_[i](t, y);
     }
@@ -80,10 +19,9 @@ RKM::RKM(const std::vector<std::function<function_type>>& functions) : functions
 
 void RKM::init(const std::vector<std::function<function_type>>& functions) {
     functions_ = functions;
-    functions_[0](0.0, {0.0});
     number_of_equations = functions_.size();
-    Y = std::vector<double>(number_of_equations, 0);
-    dY = std::vector<double>(number_of_equations, 0);
+    Y = boost_vector (number_of_equations);
+    dY = boost_vector (number_of_equations);
 }
 
 void RKM::check_boundary_collision() {
@@ -105,7 +43,7 @@ void RKM::check_boundary_collision() {
 }
 
 
-void RKM::solve(double t_begin, double t_end, const std::vector<double>& init_conditions, double h) {
+void RKM::solve(double t_begin, double t_end, const boost_vector& init_conditions, double h) {
     assert(init_conditions.size() == functions_.size());
 
     t_ = t_begin;

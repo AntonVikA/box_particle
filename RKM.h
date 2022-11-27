@@ -11,17 +11,18 @@
 #include <cmath>
 #include <fstream>
 #include <ios>
+#include "DataType.h"
 
-
-using function_type = double(double, const std::vector<double>&);
+using function_type = double(double, const boost_vector&);
 
 class RKM {
     size_t number_of_equations = 0;
     double t_ = 0;
-    std::vector<double> K1, K2, K3, K4;
-    std::vector<double> Y, dY;
+    boost_vector K1, K2, K3, K4,
+                          Y, dY;
+
     std::vector<std::function<function_type>> functions_;
-    std::vector<double> operator() (double t, const std::vector<double>& y);
+    boost_vector operator() (double t, const boost_vector& y);
     std::ofstream file;
     void check_boundary_collision();
     const double L = 25;
@@ -30,7 +31,7 @@ public:
     RKM() = default;
     RKM(const std::vector<std::function<function_type>>& functions);
     void init(const std::vector<std::function<function_type>>& functions);
-    void solve(double t_begin, double t_end, const std::vector<double>& init_conditions, double h);
+    void solve(double t_begin, double t_end, const boost_vector& init_conditions, double h);
 };
 
 
